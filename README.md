@@ -82,12 +82,12 @@ This repository includes a script to prepare the Llama3.1 instruction dataset. Y
 
 To run the dataset preparation script, use the following command. Adjust the parameters as needed:
 ```sh
-python3 /export/alt-tanbih/summer_intership_2024/LlamaLens/LlamaLens/bin/data_prep/llama3_dataset_preparation.py \
+python3 bin/data_preparation/llama3_dataset_preparation.py \
     --samples -1 \
     --split "train" \
-    --intermediate_datasets_base "/export/alt-tanbih/summer_intership_2024/LlamaLens/LlamaLens/data/instruction_datasets" \
+    --intermediate_datasets_base "data/instruction_datasets" \
     --shuffling "none" \
-    --dataset_directory "/export/alt-tanbih/summer_intership_2024/LlamaLens/LlamaLens/finetuning_datasets/testing_dataset"
+    --dataset_directory "finetuning_datasets/testing_dataset"
 ```
 
 
@@ -95,7 +95,7 @@ python3 /export/alt-tanbih/summer_intership_2024/LlamaLens/LlamaLens/bin/data_pr
 
 This is an example of how run the training script on full precision mode:
 ```sh
-accelerate launch replication_scripts/model_training/parallel_fine_tuning_llama3_Full_precision.py \
+accelerate launch bin/model_training/parallel_fine_tuning_llama3_Full_precision.py \
   --model_name "base_models/Meta-Llama-3.1-8B-Instruct" \
   --max_seq_length 512 \
   --quant_bits 4 \
@@ -115,7 +115,7 @@ This is an example of how run the training script on quantized mode:
 
 ```sh
 
-accelerate launch replication_scripts/model_training/parallel_fine_tuning_llama3_quantized.py \
+accelerate launch bin/model_training/parallel_fine_tuning_llama3_quantized.py \
   --model_name "base_models/Meta-Llama-3.1-8B-Instruct" \
   --max_seq_length 512 \
   --quant_bits 4 \
@@ -139,7 +139,7 @@ accelerate launch replication_scripts/model_training/parallel_fine_tuning_llama3
 To run inference for a specific language, you have to specify the intermediate folder that contains multiple datasets.
 
 ```sh
-python replication_scripts/evaluation/inference.py \
+python bin/evaluation/inference.py \
     --instructions-path support_data/instructions/instructions_gpt-4o_claude-3-5-sonnet_ar.json \
     --intermediate-base-path data/intermediate_datasets_ar \
     --results-folder-path "results/Test_results" \
@@ -151,7 +151,7 @@ python replication_scripts/evaluation/inference.py \
 ## Results Evaluation
 To score results, run the follwing script:
 ```sh
-python replication_scripts/evaluation/evaluate.py \
+python bin/evaluation/evaluate.py \
 --experiment_dir results/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/ar
 --output_dir scores/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/ar
 ```
@@ -197,8 +197,9 @@ This dataset is licensed under the Creative Commons Attribution-NonCommercial-Sh
 
 
 # Citation
-Please cite our papers when using this model:
-   ```sh
+Please cite [our paper](https://arxiv.org/pdf/2410.15308) when using this model:
+
+```
    @article{kmainasi2024llamalensspecializedmultilingualllm,
      title={LlamaLens: Specialized Multilingual LLM for Analyzing News and Social Media Content},
      author={Mohamed Bayan Kmainasi and Ali Ezzat Shahroor and Maram Hasanain and Sahinur Rahman Laskar and Naeemul Hassan and Firoj Alam},
