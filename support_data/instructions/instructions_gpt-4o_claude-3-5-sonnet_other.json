@@ -1,0 +1,27 @@
+{
+    "CT24_checkworthy_du": [
+        "Identify if the given claim is 'Check-worthy' or 'not-Check-worthy'. Return only the label without any explanation, justification or additional text."
+    ],
+    "subjectivity_it": [
+        "Classify the given sentence as either 'Objective' or 'Subjective'. Return only the label without any explanation, justification or additional text."
+    ],
+    "subjectivity_bg": [
+       "Classify the given sentence as either 'Objective' or 'Subjective'. Return only the label without any explanation, justification or additional text."
+    ],
+    "subjectivity_de": [
+        "Classify the given sentence as either 'Objective' or 'Subjective'. Return only the label without any explanation, justification or additional text."
+    ],
+    "CT22_dutch_1C_harmful": [
+        "Classify the given text as either 'not-harmful' or 'harmful'. Return only the label without any explanation, justification or additional text."
+    ],
+    "CT22_bulgarian_1C_harmful": [
+        "Classify the given text as either 'not-harmful' or 'harmful'. Return only the label without any explanation, justification or additional text."
+    ],
+    "CT22_dutch_1B_claim": [
+          "Determine if the given text is a 'claim' or 'not_claim'. Return only the label without any explanation, justification or additional text."
+    ],
+    "CT22_bulgarian_1B_claim": [
+          "Determine if the given text is a 'claim' or 'not_claim'. Return only the label without any explanation, justification or additional text."
+    ]
+
+}

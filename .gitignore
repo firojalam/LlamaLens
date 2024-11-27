@@ -1,0 +1,37 @@
+data/
+raw_datasets/
+intermediate_datasets/
+intermediate_datasets_en/
+intermediate_datasets_hi/
+finetuning_datasets/
+finetuned_models/
+finetuning_datasets/
+logs/
+models/
+trained_models/
+base_models/
+results/
+wandb/
+scores/
+logs/
+scripts/*
+
+*.zip
+
+# Python transient stuff
+*.egg-info
+*__pycache__
+.envs
+*.env
+*.pyc
+
+# macOS stuff
+*.DS_Store
+
+data_prep/venv
+
+
+# IDE stuff
+.idea
+
+.intermediate_datasets/
