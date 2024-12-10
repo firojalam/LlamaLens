@@ -76,8 +76,8 @@ def process_datasets(
         dataset_path = os.path.join(base_path, dataset_folder)
         print(f"Processing folder: {dataset_folder}")
 
-        train_df_path = os.path.join(dataset_path,split+".jsonl")
-        df = pd.read_json(train_df_path, lines=True)
+        train_df_path = os.path.join(dataset_path,split+".json")
+        df = pd.read_json(train_df_path)
 
 
         df = df.sample(frac=1, random_state=42).reset_index(drop=True)
