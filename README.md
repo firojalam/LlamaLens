@@ -16,10 +16,20 @@ LlamaLens is a specialized multilingual LLM designed for analyzing news and soci
 ## LlamaLens
 This repo includes scripts needed to run our full pipeline, including data preprocessing and sampling, instruction dataset creation, model fine-tuning, inference and evaluation.
 
-### Features
-- Multilingual support (Arabic, English, Hindi)
-- 19 NLP tasks with 52 datasets
-- Optimized for news and social media content analysis
+## Features
+
+- **Multilingual Support**: Arabic, English, and Hindi.
+- **Comprehensive NLP Tasks**: 19 tasks utilizing 52 datasets.
+- **Domain Optimization**: Tailored for news and social media content analysis.
+
+## Dataset
+
+The model was trained on the [LlamaLens dataset](https://huggingface.co/collections/QCRI/llamalens-672f7e0604a0498c6a2f0fe9).
+
+## Model
+
+Access the LlamaLens model on [Hugging Face](https://huggingface.co/QCRI/LlamaLens).
+
 
 ## Setup
 
