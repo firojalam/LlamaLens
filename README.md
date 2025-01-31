@@ -105,43 +105,41 @@ python3 bin/data_preparation/llama3_dataset_preparation.py \
 
 This is an example of how run the training script on full precision mode:
 ```sh
-accelerate launch bin/model_training/parallel_fine_tuning_llama3_Full_precision.py \
-  --model_name "base_models/Meta-Llama-3.1-8B-Instruct" \
-  --max_seq_length 512 \
-  --quant_bits 4 \
+accelerate launch bin/model_training/train-native.py \
+  --model_name "meta-llama/Llama-3.1-8B-Instruct" \
+  --max_seq_length 4096 \
+  --quant_bits -1 \
   --use_nested_quant False \
-  --batch_size 16 \
+  --batch_size 4 \
   --grad_size 2 \
-  --epochs 1\
-  --out_dir "trained_models/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/outputs" \
+  --epochs 2 \
+  --out_dir "/workspace/llamalens/trained_models/Llamalens_native_28_1_25/outputs" \
   --save_steps 500 \
-  --train_set_dir "data/finetuning_datasets/shuffled_by_language_20k" \
-  --dev_set_dir "data/validation_data_500" \
-  --start_from_last_checkpoint False \
-  --lora_adapter_dir "trained_models/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/lora_adapter" \
-  --merged_model_dir "trained_models/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/merged_model" \
+  --train_set_dir "/workspace/llamalens/data/finetuning_datasets/native_tuning_datasets/native_train_20k" \
+  --dev_set_dir "/workspace/llamalens/data/finetuning_datasets/native_tuning_datasets/native_dev_full" \
+  --start_from_last_checkpoint True \
+  --lora_adapter_dir "/workspace/llamalens/trained_models/Llamalens_native_28_1_25/lora_adapter" \
+  --merged_model_dir "/workspace/llamalens/trained_models/Llamalens_native_28_1_25/merged_model"
 ```
 This is an example of how run the training script on quantized mode:
 
 ```sh
 
-accelerate launch bin/model_training/parallel_fine_tuning_llama3_quantized.py \
-  --model_name "base_models/Meta-Llama-3.1-8B-Instruct" \
-  --max_seq_length 512 \
+accelerate launch bin/model_training/train-native.py \
+  --model_name "meta-llama/Llama-3.1-8B-Instruct" \
+  --max_seq_length 4096 \
   --quant_bits 4 \
   --use_nested_quant False \
-  --batch_size 16 \
+  --batch_size 4 \
   --grad_size 2 \
-  --epochs 1\
-  --quant_bits 4 \
-  --use_nested_quant False \
-  --out_dir "trained_models/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/outputs" \
+  --epochs 2 \
+  --out_dir "/workspace/llamalens/trained_models/Llamalens_native_28_1_25/outputs" \
   --save_steps 500 \
-  --train_set_dir "data/finetuning_datasets/shuffled_by_language_20k" \
-  --dev_set_dir "data/validation_data_500" \
-  --start_from_last_checkpoint False \
-  --lora_adapter_dir "trained_models/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/lora_adapter" \
-  --merged_model_dir "trained_models/Meta-Llama-3.1-8B-Instruct-shuffled_by_language_20k_4bit/merged_model" \
+  --train_set_dir "/workspace/llamalens/data/finetuning_datasets/native_tuning_datasets/native_train_20k" \
+  --dev_set_dir "/workspace/llamalens/data/finetuning_datasets/native_tuning_datasets/native_dev_full" \
+  --start_from_last_checkpoint True \
+  --lora_adapter_dir "/workspace/llamalens/trained_models/Llamalens_native_28_1_25/lora_adapter" \
+  --merged_model_dir "/workspace/llamalens/trained_models/Llamalens_native_28_1_25/merged_model"
 ```
 
 ## Model Inference
@@ -149,13 +147,7 @@ accelerate launch bin/model_training/parallel_fine_tuning_llama3_quantized.py \
 To run inference for a specific language, you have to specify the intermediate folder that contains multiple datasets.
 
 ```sh
-python bin/evaluation/inference.py \
-    --instructions-path support_data/instructions/instructions_gpt-4o_claude-3-5-sonnet_ar.json \
-    --intermediate-base-path data/intermediate_datasets_ar \
-    --results-folder-path "results/Test_results" \
-    --model-path "base_models/Meta-Llama-3.1-8B-Instruct" \
-    --samples -1 \
-    --device 0
+python bin/evaluation/inference.py --dataset-path "$DATASET_PATH" --results-folder-path "$RESULTS_FOLDER" --model-path "$MODEL_PATH"
 ```
 
 ## Results Evaluation
