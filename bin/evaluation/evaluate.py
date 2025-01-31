@@ -10,35 +10,13 @@ from sklearn.metrics import (
     classification_report,
     confusion_matrix,
 )
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.metrics import classification_report, f1_score, accuracy_score, multilabel_confusion_matrix
 import random
 import click
-import re
+from datasets import load_metric
 
-# Constants for regex patterns
-LABEL_REGEX = r"label:\s*([\w\-]+)"
-CHARACTER_REPLACEMENTS = {"ف": "f", "س": "s", "ह": "h"}
-
-
-def process_labels(df):
-    """
-    Processes the DataFrame to extract and clean labels from the output.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing the 'output' column.
-
-    Returns:
-        pd.DataFrame: DataFrame with processed labels.
-    """
-
-    # Function to apply the regex if 'label:' exists in the text
-    def extract_label(row):
-        if "label:" in row["output"]:
-            match = re.search(LABEL_REGEX, row["output"])
-            return match.group(1) if match else row["processed_output"]
-        return row["processed_output"]
-
-    df["processed_output"] = df.apply(extract_label, axis=1)
-    return df
+metric = load_metric("/workspace/llamalens/LlamaLens/bin/evaluation/rouge-metric/rouge")
 
 
 def json_to_dataframe(directory, experiment):
@@ -65,27 +43,13 @@ def json_to_dataframe(directory, experiment):
                 print(f"Error reading {filepath}: {e}")
 
     df = pd.DataFrame(records)
-    df = process_labels(df)
 
-    df["label"] = df["label"].str.lower().replace({"_": "", "-": ""}, regex=False)
+    # Clean and transform 'response'
+    df["response"] = df["response"].astype(str).str.lower().str.strip()
+    df["output"] = df["output"].astype(str).str.lower().str.strip()
 
-    # Clean and transform 'processed_output'
-    df["processed_output"] = (
-        df["processed_output"]
-        .str.lower()
-        .replace({"_": "", "-": ""}, regex=False)
-        .replace(CHARACTER_REPLACEMENTS, regex=False)
-        .apply(lambda x: x.split("/")[0] if "/" in x else x)
-        .apply(
-            lambda x: x.replace("*", "")
-            .replace("'", "")
-            .replace('"', "")
-            .split(",")[0]
-            .strip()
-        )
-    )
 
-    print("length", len(df))
+    print("Length of dataframe:", len(df))
     return df
 
 
@@ -99,51 +63,106 @@ def score_dataset(df):
     Returns:
         dict: Dictionary containing calculated metrics.
     """
+    
+    dataset_name = df.dataset.iloc[0]
+    lang = df.lang.iloc[0]
+    if "Hostility" in dataset_name:
+        df['output'] = df['output'].str.split(',').apply(lambda x: [item.strip() for item in x])
+        df['response'] = df['response'].str.split(',').apply(lambda x: [item.strip() for item in x])
+
+        # Initialize the MultiLabelBinarizer
+        mlb = MultiLabelBinarizer()
+
+        # Fit the binarizer on the true labels and transform both true and predicted labels
+        y_true = mlb.fit_transform(df['output'])
+        y_pred = mlb.transform(df['response'])
+
+        # Get the list of all label classes
+        all_labels = mlb.classes_
+        print(f"Classes: {all_labels}")
+
+        # Generate the classification report for multi-label classification
+        report_dict = classification_report(y_true, y_pred, target_names=all_labels, output_dict=True)
+
+        # Calculate additional F1 scores with different averaging methods
+        report_dict['f1_micro'] = f1_score(y_true, y_pred, average='micro')
+        report_dict['f1_macro'] = f1_score(y_true, y_pred, average='macro')
+        report_dict['f1_weighted'] = f1_score(y_true, y_pred, average='weighted')
+
+        # Calculate accuracy and add to the report dictionary
+        report_dict['accuracy'] = accuracy_score(y_true, y_pred)
+        return report_dict
+
+
+    
+    if "xlsum" in dataset_name:
+        #df = df.sample(n=10, random_state=42)
+        language = {"ar":"fa", "hi":"hi", "en":"en"}
+
+
+        scores_list = []
+        for ref, pred in zip(df["output"].tolist(), df["response"].tolist()):
+            # Compute ROUGE score for each sample
+            result = metric.compute(predictions=[pred], references=[ref], language=language[lang])
+            result = {key: round(value.mid.fmeasure, 4) * 100 for key, value in result.items()}
+            scores_list.append(result)
+            print(result)
+            print("\n\n")
+
+        # Compute average scores
+        # Assuming 'result' is a dictionary of metric names and their corresponding values.
+        total_scores = {'rouge1': 0, 'rouge2': 0, 'rougeL': 0, 'rougeLsum': 0}
+        num_jsons = len(scores_list)
+
+        # Sum the values for each metric
+        for score in scores_list:
+            for key in total_scores:
+                total_scores[key] += score[key]
+
+        # Calculate the average for each metric
+        average_scores = {key: value / num_jsons for key, value in total_scores.items()}
+
+        return average_scores
 
     def replace_invalid_labels(row, labels):
+        """
+        Replaces invalid label with a random valid label.
+        
+        Args:
+            row (str): The label to be checked.
+            labels (set): The valid labels.
+        
+        Returns:
+            str: The original or random valid label.
+        """
         return row if row in labels else random.choice(list(labels))
 
-    labels = set(df.label.unique())
-    df["processed_output"] = df["processed_output"].apply(
-        lambda x: replace_invalid_labels(x, labels)
-    )
+    labels = set(df["output"].unique())
+    
+    # Apply the invalid label handling
+    df["response"] = df["response"].apply(lambda x: replace_invalid_labels(x, labels))
 
+    # Label encoding
     label_encoder = LabelEncoder()
-    df["label"] = label_encoder.fit_transform(df["label"])
-    df["processed_output"] = label_encoder.transform(df["processed_output"])
+    df["output"] = label_encoder.fit_transform(df["output"])
+    df["response"] = label_encoder.transform(df["response"])
 
     # Calculate various metrics
     metrics = {
-        "accuracy": accuracy_score(df["label"], df["processed_output"]),
-        "precision_macro": precision_score(
-            df["label"], df["processed_output"], average="macro"
-        ),
-        "recall_macro": recall_score(
-            df["label"], df["processed_output"], average="macro"
-        ),
-        "f1_macro": f1_score(df["label"], df["processed_output"], average="macro"),
-        "precision_micro": precision_score(
-            df["label"], df["processed_output"], average="micro"
-        ),
-        "recall_micro": recall_score(
-            df["label"], df["processed_output"], average="micro"
-        ),
-        "f1_micro": f1_score(df["label"], df["processed_output"], average="micro"),
-        "precision_weighted": precision_score(
-            df["label"], df["processed_output"], average="weighted"
-        ),
-        "recall_weighted": recall_score(
-            df["label"], df["processed_output"], average="weighted"
-        ),
-        "f1_weighted": f1_score(
-            df["label"], df["processed_output"], average="weighted"
-        ),
-        "confusion_matrix": confusion_matrix(
-            df["label"], df["processed_output"]
-        ).tolist(),
+        "accuracy": accuracy_score(df["output"], df["response"]),
+        "precision_macro": precision_score(df["output"], df["response"], average="macro"),
+        "recall_macro": recall_score(df["output"], df["response"], average="macro"),
+        "f1_macro": f1_score(df["output"], df["response"], average="macro"),
+        "precision_micro": precision_score(df["output"], df["response"], average="micro"),
+        "recall_micro": recall_score(df["output"], df["response"], average="micro"),
+        "f1_micro": f1_score(df["output"], df["response"], average="micro"),
+        "precision_weighted": precision_score(df["output"], df["response"], average="weighted"),
+        "recall_weighted": recall_score(df["output"], df["response"], average="weighted"),
+        "f1_weighted": f1_score(df["output"], df["response"], average="weighted"),
+        "confusion_matrix": confusion_matrix(df["output"], df["response"]).tolist(),
         "classification_report": classification_report(
-            df["label"],
-            df["processed_output"],
+            df["output"],
+            df["response"],
             target_names=label_encoder.classes_,
             output_dict=True,
         ),
@@ -176,17 +195,15 @@ def main(experiment_dir, output_dir):
         os.makedirs(output_dir)
 
     for experiment in os.listdir(experiment_dir):
-        if "xlsum" in experiment:
-            print("Skipping scoring for", experiment)
-            continue
 
         experiment_path = os.path.join(experiment_dir, experiment)
         experiment_dataframe = json_to_dataframe(experiment_path, experiment)
+
         metrics = score_dataset(experiment_dataframe)
 
         output_json_file = os.path.join(output_dir, experiment + ".json")
-        with open(output_json_file, "w") as json_file:
-            json.dump(metrics, json_file, indent=4)
+        with open(output_json_file, "w", encoding="utf-8") as json_file:
+            json.dump(metrics, json_file, indent=4, ensure_ascii=False)
 
         print(f"Metrics saved to '{output_json_file}'")
 
