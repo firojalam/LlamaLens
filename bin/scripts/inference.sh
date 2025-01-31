@@ -1,7 +1,9 @@
-python bin/evaluation/inference.py \
-    --instructions-path support_data/instructions/instructions_gpt-4o_claude-3-5-sonnet_ar.json \
-    --intermediate-base-path data/intermediate_datasets_ar \
-    --results-folder-path "results/Test_results" \
-    --model-path "base_models/Meta-Llama-3.1-8B-Instruct" \
-    --samples -1 \
-    --device 0
+#!/bin/bash
+
+# Define paths
+DATASET_PATH="/workspace/llamalens/data/test_full_native_english.json"
+RESULTS_FOLDER="/workspace/llamalens/results/non-native"
+MODEL_PATH="/workspace/llamalens/trained_models/Llamalens_EN_28_1_25/merged_model"
+
+# Run the Python script
+python clean_inference_script.py --dataset-path "$DATASET_PATH" --results-folder-path "$RESULTS_FOLDER" --model-path "$MODEL_PATH"
