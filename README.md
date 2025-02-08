@@ -5,7 +5,7 @@
 
 
 ## Overview
-LlamaLens is a specialized multilingual LLM designed for analyzing news and social media content. It focuses on 19 NLP tasks, leveraging 52 datasets across Arabic, English, and Hindi.
+LlamaLens is a specialized multilingual LLM designed for analyzing news and social media content. It focuses on 18 NLP tasks, leveraging 52 datasets across Arabic, English, and Hindi.
 
 <p align="center">
 <picture>
@@ -19,7 +19,7 @@ This repo includes scripts needed to run our full pipeline, including data prepr
 ## Features
 
 - **Multilingual Support**: Arabic, English, and Hindi.
-- **Comprehensive NLP Tasks**: 19 tasks utilizing 52 datasets.
+- **Comprehensive NLP Tasks**: 18 tasks utilizing 52 datasets.
 - **Domain Optimization**: Tailored for news and social media content analysis.
 
 ## Dataset
