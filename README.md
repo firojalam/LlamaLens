@@ -172,24 +172,22 @@ Each JSONL file in the dataset follows a structured format with the following fi
 - `task`: The specific task type.
 - `lang`: The language of the input text.
 - `instruction`: A brief set of instructions describing how the text should be labeled.
-- `text`: A formatted structure including instructions and response for the task in a conversation format between the system, user, and assistant, showing the decision process.
-
 
 
 **Example entry in JSONL file:**
 
 ```
 {
-    "id": "d1662e29-11cf-45cb-bf89-fa5cd993bc78",
-    "original_id": "nan",
-    "input": "الدفاع الجوي السوري يتصدى لهجوم صاروخي على قاعدة جوية في حمص",
-    "output": "not_claim",
-    "dataset": "ans-claim",
-    "task": "Claim detection",
+    "id": "c64503bb-9253-4f58-aef8-9b244c088b15",
+    "original_id": "1,722,643,241,323,950,300",
+    "input": "يريدون توريط السلطة الفلسطينية في الضفة ودق آخر مسمار في نعش ما تبقى من هويتنا الفلسطينية، كما تم توريط غزة. يريدون إعلان كفاح مسلح من طرف الأجهزة الأمنية الفلسطينية علناً! لكن ما يعلمونه وما يرونه ولا يريدون التحدث به، أن أبناء الأجهزة الأمنية في النهار يكونون عسكريين... https://t.co/qF2Fjh24hV https://t.co/1UicLkDd52",
+    "output": "checkworthy",
+    "dataset": "Checkworthiness",
+    "task": "Checkworthiness",
     "lang": "ar",
-    "instruction": "Analyze the given text and label it as 'claim' if it includes a factual statement that can be verified, or 'not_claim' if it's not a checkable assertion. Return only the label without any explanation, justification or additional text.",
-    "text": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>You are a social media expert providing accurate analysis and insights.<|eot_id|><|start_header_id|>user<|end_header_id|>Analyze the given text and label it as 'claim' if it includes a factual statement that can be verified, or 'not_claim' if it's not a checkable assertion. Return only the label without any explanation, justification or additional text.\ninput: الدفاع الجوي السوري يتصدى لهجوم صاروخي على قاعدة جوية في حمص\nlabel: <|eot_id|><|start_header_id|>assistant<|end_header_id|>not_claim<|eot_id|><|end_of_text|>"
+    "instructions": "Identify if the given factual claim is 'checkworthy' or 'not-checkworthy'. Return only the label without any explanation, justification, or additional text."
 }
+
 ```
 
 
