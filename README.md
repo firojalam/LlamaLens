@@ -1,6 +1,6 @@
-# [LlamaLens: Specialized Multilingual LLM forAnalyzing News and Social Media Content](https://arxiv.org/pdf/2410.15308)
+# [LlamaLens: Specialized Multilingual LLM forAnalyzing News and Social Media Content](https://aclanthology.org/2025.findings-naacl.313.pdf)
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen) ![License](https://img.shields.io/badge/license-CC--BY--NC--SA-blue) [![Paper](https://img.shields.io/badge/Paper-Download%20PDF-green)](https://arxiv.org/pdf/2410.15308)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen) ![License](https://img.shields.io/badge/license-CC--BY--NC--SA-blue) [![Paper](https://img.shields.io/badge/Paper-Download%20PDF-green)](https://aclanthology.org/2025.findings-naacl.313.pdf)
 
 
 
